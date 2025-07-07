@@ -1,0 +1,235 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// DO NOT MODIFY THIS FILE :-)
+// --------------------------------------------------------------------
+
+#pragma once
+
+// clang-format off
+
+#include <Utilities/XPPlatforms.h>
+
+#include <Utilities/XPBitFlag.h>
+#include <Utilities/XPMemoryPool.h>
+#include <SceneDescriptor/XPAttachments.h>
+{% for attachment in attachments -%}
+    #include <SceneDescriptor/Attachments/{{ attachment.fileStem }}{{ attachment.fileExtension }}>
+{% endfor %}
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wall"
+#endif
+#include <nlohmann/json.hpp>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+#include <optional>
+#include <variant>
+#include <vector>
+#include <list>
+
+class XPAttachmentRenderer;
+
+class XPScene;
+class XPLayer;
+class XPNode;
+class XPIUI;
+
+class XPNode
+{
+    XP_MPL_MEMORY_POOL(XPNode)
+    friend class XPSceneStore;
+
+  public:
+    // returns the name of the node
+    [[nodiscard]] std::string getName() const;
+
+    // returns the id of the node    
+    [[nodiscard]] uint32_t getId() const;
+
+    // returns the parent node or layer, depending on the type of the parent
+    [[nodiscard]] std::variant<XPLayer*, XPNode*> getParent() const;
+
+    // optionally returns the parent layer if the bound parent is a layer
+    [[nodiscard]] std::optional<XPLayer*> getParentLayer() const;
+
+    // optionally returns the parent node if the bound parent is a node
+    [[nodiscard]] std::optional<XPNode*> getParentNode() const;
+
+    // returns the most common layer that the node belongs to
+    [[nodiscard]] XPLayer* getAbsoluteLayer() const;
+
+    // returns the most common scene that the node belonds to
+    [[nodiscard]] XPScene* getAbsoluteScene() const;
+    
+    // allocate memory and initialize a node as a child and return it if it's not a duplicate
+    std::optional<XPNode*> createNode(std::string name);
+
+    // attempt to get or if failed, allocate memory and initialize a node as a child
+    std::optional<XPNode*> getOrCreateNode(std::string name);
+
+    // remove all nodes
+    void destroyAllNodes();
+
+    // remove node from children and reclaim memory
+    void destroyNode(XPNode* node);
+
+    // search for node by name, if found, remove it from children and reclaim memory
+    void destroyNode(std::string name);
+
+    // return a node iterator from the nodes list if found
+    [[nodiscard]] std::list<XPNode*>::const_iterator findNode(XPNode* node) const;
+
+    // return a node iterator from the nodes list if found
+    [[nodiscard]] std::list<XPNode*>::const_iterator findNode(std::string name) const;
+
+    // optionally returns a node if found matching name
+    [[nodiscard]] std::optional<XPNode*> getNode(std::string name) const;
+
+    // returns the children nodes
+    [[nodiscard]] std::list<XPNode*> getNodes() const;
+
+    // sets or unsets the selection aspect of the node
+    void setSelected(bool selected);
+
+    // returns true if node is selected
+    [[nodiscard]] bool isSelected() const;
+
+    // sets or unsets the hidden aspect of the node
+    void setHidden(bool hidden);
+
+    // returns true if node is hidden
+    [[nodiscard]] bool isHidden() const;
+
+    // sets or unsets the full match of the search query aspect of the node
+    void setFullyMatchingSearchQuery(bool matches);
+
+    // returns true if node is fully matching the search query in the editor hierarchy
+    [[nodiscard]] bool isFullyMatchingSearchQuery() const;
+
+    // sets or unsets the partial match of the search query aspect of the node
+    void setPartiallyMatchingSearchQuery(bool partiallyMatches);
+
+    // returns true if node is partially matching the search query in the editor hierarchy
+    [[nodiscard]] bool isPartiallyMatchingSearchQuery() const;
+
+    // adds attachment changes flag
+    void addAttachmentChanges(uint32_t changesFlags, bool propagateUpwards = true, bool propagateDownwards = false);
+
+    // removes changes flag
+    void removeAttachmentChanges(uint32_t changesFlags, bool propagateUpwards = true, bool propagateDownwards = false);
+
+    // returns true if all the given changes exist
+    [[nodiscard]] bool hasAllAttachmentChanges(uint32_t changesFlags) const;
+
+    // returns true if any of the given changes exist
+    [[nodiscard]] bool hasAnyAttachmentChanges(uint32_t changesFlags) const;
+
+    // returns true if only the given changes exist
+    [[nodiscard]] bool hasOnlyAttachmentChanges(uint32_t changesFlags) const;
+
+    // attach all available attachments in one go
+    void attachAll();
+
+    // attach one or many attachments in a single call
+    void attach(XPAttachmentDescriptor attachmentDescriptor);
+
+    {% for attachment in attachments %}
+        // attaches a {{ attachment.name.functionName }} attachment
+        void attach{{ attachment.name.functionName }}();
+    {% endfor %}
+
+    // detach all available attachments in one go
+    void detachAll();
+
+    // detach one or many attachments in a single call
+    void detach(XPAttachmentDescriptor attachmentDescriptor);
+
+    {% for attachment in attachments %}
+        // detaches the {{ attachment.name.functionName }} attachment
+        void detach{{ attachment.name.functionName }}();
+    {% endfor %}
+
+    // check for one or many attachments in a single call
+    [[nodiscard]] bool hasAttachments(XPAttachmentDescriptor attachmentDescriptor);
+
+    {% for attachment in attachments %}
+        // returns whether a {{ attachment.name.functionName }} is attached or not
+        [[nodiscard]] bool has{{ attachment.name.functionName }}Attachment() const;
+    {% endfor %}
+
+    // get a descriptor that represents all the attached attachments
+    [[nodiscard]] XPAttachmentDescriptor getAttachmentDescriptor() const;
+
+    {% for attachment in attachments %}
+        // returns the {{ attachment.name.functionName }} attachment or nullptr if not attached
+        [[nodiscard]] {{ attachment.name.functionName }}* get{{ attachment.name.functionName }}() const;
+    {% endfor %}
+
+    // completely deletes the attachments which were detached and its associated memory
+    void destroy(XPAttachmentDescriptor attachmentDescriptor);
+
+    {% for attachment in attachments %}
+        // completely deletes the {{ attachment.name.functionName }} attachment which was detached and its associated memory
+        void destroy{{ attachment.name.functionName }}();
+    {% endfor %}
+
+    // render all attachments as described by the descriptor
+    void renderAll(XPIUI* ui);
+
+    {% for attachment in attachments %}
+        // renders a {{ attachment.name.functionName }} attachment
+        void render{{ attachment.name.functionName }}(XPIUI* ui);
+    {% endfor %}
+    
+    // [serialize] returns a json object representing the node
+    static void to_json(nlohmann::json& j, const XPNode& self);
+
+    // [deserialize] fills a node from a json object that represents the node
+    static std::optional<XPNode*> from_json(const nlohmann::json& j);
+
+  private:
+    // only accessible through memory pool
+    XPNode(std::string name, uint32_t id, XPLayer* parent);
+
+    // only accessible through memory pool
+    XPNode(std::string name, uint32_t id, XPNode* parent);
+
+    // only accessible through memory pool
+    ~XPNode();
+
+    // holds the parent of the node, it's either a node or a layer
+    std::variant<XPLayer*, XPNode*> _parent;
+
+    // children nodes
+    std::list<XPNode*> _nodes;
+
+    // name of the node
+    std::string _name;
+
+    // represents the id of the node compared to the attachment system it is attached to
+    uint32_t _id;
+
+    // embeds interactive information about the node
+    XPBitFlag<uint32_t> _interaction;
+
+    // embeds information about the attached or dettached attachments
+    XPBitFlag<XPAttachmentDescriptor> _attachmentDescriptor;
+};
+
+// clang-format on

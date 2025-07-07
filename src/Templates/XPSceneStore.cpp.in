@@ -1,0 +1,197 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// DO NOT MODIFY THIS FILE :-)
+// --------------------------------------------------------------------
+
+#include <SceneDescriptor/XPSceneStore.h>
+
+#include <SceneDescriptor/XPScene.h>
+
+// clang-format off
+
+XPSceneStore::XPSceneStore(XPScene* scene) {
+    _scene      = scene;
+    _layerPool  = XP_NEW XPMemoryPool<XPLayer>(1, 1);
+    _nodePool   = XP_NEW XPMemoryPool<XPNode>(128, 512);
+    {% for attachment in attachments -%}
+    _{{ attachment.name.variableName }}Pool = XP_NEW XPMemoryPool<{{ attachment.name.functionName }}>(32, 128);
+    {% endfor -%}
+
+    _nextLayerId = 0;
+    _nextNodeId  = 0;
+}
+
+XPSceneStore::~XPSceneStore() {
+    delete _layerPool;
+    delete _nodePool;
+    {% for attachment in attachments -%}
+    delete _{{ attachment.name.variableName }}Pool;
+    {% endfor -%}
+}
+
+XPLayer*
+XPSceneStore::createLayer(XPScene* parentScene, std::string name)
+{
+    auto layer = _layerPool->create(std::move(name), ++_nextLayerId, parentScene);
+    _scene->onLayerCreated(layer);
+    return layer;
+}
+
+void
+XPSceneStore::destroyLayer(XPLayer* layer)
+{
+    _scene->onLayerDestroyed(layer);
+    _layerPool->destroy(layer);
+}
+
+XPNode*
+XPSceneStore::createNode(XPLayer* parentLayer, std::string name)
+{
+    auto node = _nodePool->create(std::move(name), ++_nextNodeId, parentLayer);
+    _scene->onNodeCreated(node);
+    _nodeTable[_nextNodeId] = node;
+    return node;
+}
+
+XPNode*
+XPSceneStore::createNode(XPNode* parentNode, std::string name)
+{
+    auto node = _nodePool->create(std::move(name), ++_nextNodeId, parentNode);
+    _scene->onNodeCreated(node);
+    _nodeTable[_nextNodeId] = node;
+    return node;
+}
+
+std::optional<XPNode*>
+XPSceneStore::getNode(uint32_t nodeId)
+{
+    auto it = _nodeTable.find(nodeId);
+    if(it != _nodeTable.end()) {
+        return it->second;
+    }
+    return std::nullopt;
+}
+
+void
+XPSceneStore::destroyNode(XPNode* node)
+{
+    {% for attachment in attachments -%}
+    {
+        auto attachedIt = _attached{{ attachment.name.functionName }}Table.find(node->_id);
+        if(attachedIt != _attached{{ attachment.name.functionName }}Table.end()) {
+            destroy{{ attachment.name.functionName }}Attachment((*attachedIt).second);
+        }
+        auto detachedIt = _detached{{ attachment.name.functionName }}Table.find(node->_id);
+        if(detachedIt != _detached{{ attachment.name.functionName }}Table.end()) {
+            destroy{{ attachment.name.functionName }}Attachment((*detachedIt).second);
+        }
+    }
+    {% endfor -%}
+    node->_attachmentDescriptor.clearAll();
+    _nodeTable.erase(node->getId());
+    _scene->onNodeDestroyed(node);
+    _nodePool->destroy(node);
+}
+
+void
+XPSceneStore::nodeAttach(XPNode* node, XPAttachmentDescriptor attachmentDescriptor)
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>(attachmentDescriptor);
+    {% for attachment in attachments -%}
+        if(bf.has({{ attachment.name.functionName }}AttachmentDescriptor)) {
+            nodeAttach{{ attachment.name.functionName }}(node);
+        }
+    {% endfor -%}
+}
+
+
+void
+XPSceneStore::nodeDetach(XPNode* node, XPAttachmentDescriptor attachmentDescriptor)
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>(attachmentDescriptor);
+    {% for attachment in attachments -%}
+        if(bf.has({{ attachment.name.functionName }}AttachmentDescriptor)) {
+            nodeDetach{{ attachment.name.functionName }}(node);
+        }
+    {% endfor -%}
+}
+
+{% for attachment in attachments -%}
+{{ attachment.name.functionName }}*
+XPSceneStore::create{{ attachment.name.functionName }}Attachment(XPNode* owner)
+{
+    {{ attachment.name.functionName }}* ptr = _{{ attachment.name.variableName }}Pool->create(owner);
+    _attached{{ attachment.name.functionName }}Table[owner->_id] = ptr;
+    return ptr;
+}
+
+void
+XPSceneStore::destroy{{ attachment.name.functionName }}Attachment({{ attachment.name.functionName }}* {{ attachment.name.variableName }}Attachment)
+{
+    _attached{{ attachment.name.functionName }}Table.erase({{ attachment.name.variableName }}Attachment->owner->_id);
+    _detached{{ attachment.name.functionName }}Table.erase({{ attachment.name.variableName }}Attachment->owner->_id);
+    _{{ attachment.name.variableName }}Pool->destroy({{ attachment.name.variableName }}Attachment);
+}
+
+{{ attachment.name.functionName }}*
+XPSceneStore::nodeAttach{{ attachment.name.functionName }}(XPNode* node)
+{
+    auto it = _detached{{ attachment.name.functionName }}Table.find(node->_id);
+    if(it != _detached{{ attachment.name.functionName }}Table.end()) {
+        {{ attachment.name.functionName }}* ptr = (*it).second;
+        _attached{{ attachment.name.functionName }}Table[node->_id] = ptr;
+        _detached{{ attachment.name.functionName }}Table.erase(it);
+        return ptr;
+    } else {
+        auto it2 = _attached{{ attachment.name.functionName }}Table.find(node->_id);
+        if(it2 == _attached{{ attachment.name.functionName }}Table.end()) {
+            {{ attachment.name.functionName }}* ptr = create{{ attachment.name.functionName }}Attachment(node);
+            _attached{{ attachment.name.functionName }}Table.insert({ node->_id, ptr });
+            return ptr;
+        } else {
+            return (*it2).second;
+        }
+    }
+}
+
+{{ attachment.name.functionName }}*
+XPSceneStore::nodeDetach{{ attachment.name.functionName }}(XPNode* node)
+{
+    auto it = _attached{{ attachment.name.functionName }}Table.find(node->_id);
+    if(it != _attached{{ attachment.name.functionName }}Table.end()) {
+        {{ attachment.name.functionName }}* ptr = (*it).second;
+        _detached{{ attachment.name.functionName }}Table[node->_id] = ptr;
+        _attached{{ attachment.name.functionName }}Table.erase(it);
+        return ptr;
+    }
+    return nullptr;
+}
+
+{{ attachment.name.functionName }}*
+XPSceneStore::getNode{{ attachment.name.functionName }}Attachment(const XPNode* node)
+{
+    auto it = _attached{{ attachment.name.functionName }}Table.find(node->_id);
+    if(it != _attached{{ attachment.name.functionName }}Table.end()) { return (*it).second; }
+    return nullptr;
+}
+
+{% endfor -%}
+
+uint32_t XPSceneStore::getNextLayerId() const { return _nextLayerId + 1; }
+
+uint32_t XPSceneStore::getNextNodeId() const { return _nextNodeId + 1; }
+
+// clang-format on

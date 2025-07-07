@@ -1,0 +1,74 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// DO NOT MODIFY THIS FILE
+// --------------------------------------------------------------------
+
+#pragma once
+
+// clang-format off
+
+#include <Utilities/XPPlatforms.h>
+
+#include <array>
+#include <stdint.h>
+#include <string_view>
+#include <utility>
+
+
+#define _Bool bool
+typedef uint32_t XPAttachmentDescriptor;
+
+// total number of attachments in the system
+constexpr XPAttachmentDescriptor AttachmentsCount = {{ attachmentsCount }};
+
+{% for attachment in attachments -%}
+    // the index of {{ attachment.name.text }} attachment
+    constexpr XPAttachmentDescriptor {{ attachment.name.functionName }}Index = {{ loop.index }};
+{% endfor %}
+
+{% for attachment in attachments -%}
+    // the descriptor representing the {{ attachment.name.text }} attachment
+    constexpr XPAttachmentDescriptor {{ attachment.name.functionName }}AttachmentDescriptor = {{ 2 ^ (loop.index) }};
+{% endfor %}
+
+{% for attachment in attachments -%}
+    // the display (truncated) name of the {{ attachment.name.text }} attachment
+    constexpr std::string_view {{ attachment.name.functionName }}Name = "{{ attachment.name.text }}";
+{% endfor %}
+
+// table that maps the display name of each attachment to its correspondig descriptor value
+constexpr std::array<std::pair<std::string_view, XPAttachmentDescriptor>, {{ attachmentsCount }}> AttachmentsTable = {
+    {% for attachment in attachments -%}
+        std::make_pair({{ attachment.name.functionName }}Name, {{ attachment.name.functionName }}AttachmentDescriptor){% if not loop.is_last %}, {% endif %}
+    {% endfor %}
+};
+
+enum XPEInteraction : uint32_t
+{
+    XPEInteractionNone                    = 0,
+    XPEInteractionSelected                = 1ULL << 0,
+    XPEInteractionHidden                  = 1ULL << 1,
+    XPEInteractionFullyMatchingSearch     = 1ULL << 2,
+    XPEInteractionPartiallyMatchingSearch = 1ULL << 3,
+    XPEInteractionHasRenderingChanges     = 1ULL << 4,
+    XPEInteractionBeginTraitsChanges      = 1ULL << 5,
+    {% for attachment in attachments -%}
+    XPEInteractionHas{{ attachment.name.functionName }}Changes  = 1ULL << (6 + {{ loop.index }}),
+    {% endfor %}
+    XPEInteractionEndTraitsChanges        = 1ULL << (6 + {{ attachmentsCount }}),
+};
+
+// clang-format on

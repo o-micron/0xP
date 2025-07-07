@@ -1,0 +1,500 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// DO NOT MODIFY THIS FILE :-)
+// --------------------------------------------------------------------
+
+#include <SceneDescriptor/XPNode.h>
+
+#include <SceneDescriptor/XPLayer.h>
+#include <SceneDescriptor/XPScene.h>
+#include <SceneDescriptor/XPSceneStore.h>
+#if defined(XP_EDITOR_MODE)
+    #include <UI/Interface/XPIUI.h>
+#endif
+#include <string>
+
+// clang-format off
+
+XPNode::XPNode(std::string name, uint32_t id, XPLayer* parent)
+  : _parent(parent)
+  , _name(std::move(name))
+  , _id(id)
+  , _interaction(XPBitFlag<uint32_t>())
+  , _attachmentDescriptor(XPBitFlag<XPAttachmentDescriptor>())
+{
+}
+
+XPNode::XPNode(std::string name, uint32_t id, XPNode* parent)
+  :  _parent(parent)
+  , _name(std::move(name))
+  , _id(id)
+  , _attachmentDescriptor(XPBitFlag<XPAttachmentDescriptor>())
+{
+}
+
+XPNode::~XPNode()
+{
+    while (!_nodes.empty()) {
+        if(XPNode* node = _nodes.front()) {
+            getAbsoluteScene()->getSceneStore()->destroyNode(node);
+            _nodes.pop_front();
+        }
+    }
+    _nodes.clear();
+    _id = 0;
+}
+
+std::string
+XPNode::getName() const
+{
+    return _name;
+}
+
+uint32_t
+XPNode::getId() const
+{
+    return _id;
+}
+
+std::variant<XPLayer*, XPNode*>
+XPNode::getParent() const
+{
+    return _parent;
+}
+
+std::optional<XPLayer*>
+XPNode::getParentLayer() const
+{
+    if (std::holds_alternative<XPLayer*>(_parent)) {
+        return { std::get<XPLayer*>(_parent) };
+    }
+    return {};
+}
+
+std::optional<XPNode*>
+XPNode::getParentNode() const
+{
+    if (std::holds_alternative<XPNode*>(_parent)) {
+        return { std::get<XPNode*>(_parent) };
+    }
+    return {};
+}
+
+XPLayer*
+XPNode::getAbsoluteLayer() const
+{
+    const XPNode* currentNode   = this;
+    XPLayer*      absoluteLayer = nullptr;
+    while (currentNode && !absoluteLayer) {
+        if (std::holds_alternative<XPLayer*>(currentNode->_parent)) {
+            absoluteLayer = std::get<XPLayer*>(currentNode->_parent);
+        } else {
+            currentNode = std::get<XPNode*>(currentNode->_parent);
+        }
+    }
+    if (!absoluteLayer) {
+        XP_UNIMPLEMENTED("A node must be directly or indirectly bound to a layer.\n");
+    }
+    return absoluteLayer;
+}
+
+XPScene*
+XPNode::getAbsoluteScene() const
+{
+    XPLayer* absoluteLayer = getAbsoluteLayer();
+    if (absoluteLayer) { return absoluteLayer->getParent(); }
+    XP_UNIMPLEMENTED("A node must be indirectly bound to a scene.\n");
+    return nullptr;
+}
+
+
+std::optional<XPNode*>
+XPNode::createNode(std::string name)
+{
+    auto it = findNode(name);
+    if (it == _nodes.end()) {
+        XPNode* node = getAbsoluteScene()->getSceneStore()->createNode(this, name);
+        _nodes.push_front(node);
+        return { node };
+    }
+    return std::nullopt;
+}
+
+std::optional<XPNode*>
+XPNode::getOrCreateNode(std::string name)
+{
+    auto it = findNode(name);
+    if (it == _nodes.end()) {
+        XPNode* node = getAbsoluteScene()->getSceneStore()->createNode(this, name);
+        _nodes.push_front(node);
+        return { node };
+    }
+    return { *it };
+}
+
+void
+XPNode::destroyAllNodes()
+{
+    for (auto it = _nodes.begin(); it != _nodes.end();) {
+        XPNode* node = *it;
+        it           = _nodes.erase(it);
+        getAbsoluteScene()->getSceneStore()->destroyNode(node);
+    }
+}
+
+void
+XPNode::destroyNode(XPNode* node)
+{
+    auto it = findNode(node);
+    if (it != _nodes.end()) {
+        _nodes.erase(it);
+        getAbsoluteScene()->getSceneStore()->destroyNode(node);
+    }
+}
+
+void
+XPNode::destroyNode(std::string name)
+{
+    auto it = findNode(std::move(name));
+    if (it != _nodes.end()) {
+        XPNode* node = *it;
+        _nodes.erase(it);
+        getAbsoluteScene()->getSceneStore()->destroyNode(node);
+    }
+}
+
+std::list<XPNode*>::const_iterator
+XPNode::findNode(XPNode* node) const
+{
+    return std::find(_nodes.begin(), _nodes.end(), node);
+}
+
+std::list<XPNode*>::const_iterator
+XPNode::findNode(std::string name) const
+{
+    for (auto it = _nodes.begin(); it != _nodes.end(); ++it) {
+        if ((*it)->getName() == name) { return it; }
+    }
+    return _nodes.end();
+}
+
+std::optional<XPNode*>
+XPNode::getNode(std::string name) const
+{
+    auto it = findNode(std::move(name));
+    if (it != _nodes.end()) {
+        return { *it };
+    }
+    return std::nullopt;
+}
+
+std::list<XPNode*>
+XPNode::getNodes() const
+{
+    return _nodes;
+}
+
+void
+XPNode::setSelected(bool selected)
+{
+    if(selected) {
+        _interaction.add(XPEInteractionSelected);
+    } else {
+        _interaction.remove(XPEInteractionSelected);
+    }
+}
+
+bool
+XPNode::isSelected() const
+{
+    return _interaction.has(XPEInteractionSelected);
+}
+
+void
+XPNode::setHidden(bool hidden)
+{
+    if(hidden) {
+        _interaction.add(XPEInteractionHidden);
+    } else {
+        _interaction.remove(XPEInteractionHidden);
+    }
+}
+
+bool
+XPNode::isHidden() const
+{
+    return _interaction.has(XPEInteractionHidden);
+}
+
+void
+XPNode::setFullyMatchingSearchQuery(bool matches)
+{
+    if(matches) {
+        _interaction.add(XPEInteractionFullyMatchingSearch);
+    } else {
+        _interaction.remove(XPEInteractionFullyMatchingSearch);
+    }
+}
+
+bool
+XPNode::isFullyMatchingSearchQuery() const
+{
+    return _interaction.has(XPEInteractionFullyMatchingSearch);
+}
+
+void
+XPNode::setPartiallyMatchingSearchQuery(bool partiallyMatches)
+{
+    if(partiallyMatches) {
+        _interaction.add(XPEInteractionPartiallyMatchingSearch);
+    } else {
+        _interaction.remove(XPEInteractionPartiallyMatchingSearch);
+    }
+}
+
+bool
+XPNode::isPartiallyMatchingSearchQuery() const
+{
+    return _interaction.has(XPEInteractionPartiallyMatchingSearch);
+}
+
+void
+XPNode::addAttachmentChanges(uint32_t changesFlags, bool propagateUpwards, bool propagateDownwards)
+{
+    _interaction.add(changesFlags);
+    if (propagateUpwards) {
+        if (std::holds_alternative<XPLayer*>(_parent)) {
+            std::get<XPLayer*>(_parent)->addAttachmentChanges(changesFlags, true, false);
+        } else if (std::holds_alternative<XPNode*>(_parent)) {
+            std::get<XPNode*>(_parent)->addAttachmentChanges(changesFlags, true, false);
+        }
+    }
+    if (propagateDownwards) {
+        for (auto it = _nodes.begin(); it != _nodes.end(); ++it) { (*it)->addAttachmentChanges(changesFlags, true); }
+    }
+}
+
+void
+XPNode::removeAttachmentChanges(uint32_t changesFlags, bool propagateUpwards, bool propagateDownwards)
+{
+    _interaction.remove(changesFlags);
+        if (propagateUpwards) {
+            if (std::holds_alternative<XPLayer*>(_parent)) {
+                std::get<XPLayer*>(_parent)->removeAttachmentChanges(changesFlags, true, false);
+            } else if (std::holds_alternative<XPNode*>(_parent)) {
+                std::get<XPNode*>(_parent)->removeAttachmentChanges(changesFlags, true, false);
+            }
+        }
+    if (propagateDownwards) {
+        for (auto it = _nodes.begin(); it != _nodes.end(); ++it) { (*it)->removeAttachmentChanges(changesFlags, true); }
+    }
+}
+
+bool
+XPNode::hasAllAttachmentChanges(uint32_t changesFlags) const
+{
+    return _interaction.has(changesFlags);
+}
+
+bool
+XPNode::hasAnyAttachmentChanges(uint32_t changesFlags) const
+{
+    return _interaction.hasAny(changesFlags);
+}
+
+bool
+XPNode::hasOnlyAttachmentChanges(uint32_t changesFlags) const
+{
+    return _interaction.is(changesFlags);
+}
+
+void
+XPNode::attachAll()
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>();
+    {% for attachment in attachments -%}
+        bf.add({{ attachment.name.functionName }}AttachmentDescriptor);
+    {% endfor %}
+    attach(bf.getBits());
+}
+
+void
+XPNode::attach(XPAttachmentDescriptor attachmentDescriptor)
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>(attachmentDescriptor);
+    {% for attachment in attachments -%}
+        if (bf.has({{ attachment.name.functionName }}AttachmentDescriptor) && !hasAttachments({{ attachment.name.functionName }}AttachmentDescriptor)) {
+            attach{{ attachment.name.functionName }}();
+        }
+    {% endfor %}
+}
+
+{% for attachment in attachments %}
+void
+XPNode::attach{{ attachment.name.functionName }}()
+{
+    if(getAbsoluteScene()->getSceneStore()->nodeAttach{{ attachment.name.functionName }}(this)) {
+        _attachmentDescriptor.add({{ attachment.name.functionName }}AttachmentDescriptor);
+        getAbsoluteScene()->onNodeAttachmentDescriptorAdded(this, {{ attachment.name.functionName }}AttachmentDescriptor);
+        onTraitAttached(get{{ attachment.name.functionName }}());
+    }
+}
+{% endfor %}
+
+void
+XPNode::detachAll()
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>();
+    {% for attachment in attachments -%}
+        bf.add({{ attachment.name.functionName }}AttachmentDescriptor);
+    {% endfor %}
+    detach(bf.getBits());
+}
+
+void
+XPNode::detach(XPAttachmentDescriptor attachmentDescriptor)
+{
+    auto bf = XPBitFlag<XPAttachmentDescriptor>(attachmentDescriptor);
+    {% for attachment in attachments -%}
+        if (bf.has({{ attachment.name.functionName }}AttachmentDescriptor) && hasAttachments({{ attachment.name.functionName }}AttachmentDescriptor)) {
+            detach{{ attachment.name.functionName }}();
+        }
+    {% endfor %}
+}
+
+{% for attachment in attachments %}
+void
+XPNode::detach{{ attachment.name.functionName }}()
+{
+    onTraitDettached(get{{ attachment.name.functionName }}());
+    if({{ attachment.name.functionName }}* {{ attachment.name.variableName }} = getAbsoluteScene()->getSceneStore()->nodeDetach{{ attachment.name.functionName }}(this)) {
+        getAbsoluteScene()->onNodeAttachmentDescriptorRemoved(this, {{ attachment.name.functionName }}AttachmentDescriptor);
+        _attachmentDescriptor.remove({{ attachment.name.functionName }}AttachmentDescriptor);
+    }
+}
+{% endfor %}
+
+bool
+XPNode::hasAttachments(XPAttachmentDescriptor attachmentDescriptor)
+{
+    return _attachmentDescriptor.has(attachmentDescriptor);
+}
+
+{% for attachment in attachments %}
+bool
+XPNode::has{{ attachment.name.functionName }}Attachment() const
+{
+    return _attachmentDescriptor.has({{ attachment.name.functionName }}AttachmentDescriptor);
+}
+{% endfor %}
+
+XPAttachmentDescriptor
+XPNode::getAttachmentDescriptor() const
+{
+    return _attachmentDescriptor.getBits();
+}
+
+{% for attachment in attachments %}
+{{ attachment.name.functionName }}*
+XPNode::get{{ attachment.name.functionName }}() const
+{
+    if (_attachmentDescriptor.has({{ attachment.name.functionName }}AttachmentDescriptor)) {
+        return getAbsoluteScene()->getSceneStore()->getNode{{ attachment.name.functionName }}Attachment(this);
+    }
+    return nullptr;
+}
+{% endfor %}
+
+void
+XPNode::destroy(XPAttachmentDescriptor attachmentDescriptor)
+{
+    XP_UNUSED(attachmentDescriptor)
+
+    XP_UNIMPLEMENTED("[UNIMPLEMENTED]");
+}
+
+{% for attachment in attachments %}
+void
+XPNode::destroy{{ attachment.name.functionName }}()
+{
+    XP_UNIMPLEMENTED("[UNIMPLEMENTED]");
+}
+{% endfor %}
+
+
+void
+XPNode::renderAll(XPIUI* ui)
+{
+    {% for attachment in attachments -%}
+        if (_attachmentDescriptor.has({{ attachment.name.functionName }}AttachmentDescriptor)) {
+            render{{ attachment.name.functionName }}(ui);
+        }
+    {% endfor %}
+}
+
+{% for attachment in attachments %}
+void
+XPNode::render{{ attachment.name.functionName }}(XPIUI* ui)
+{
+#if defined(XP_EDITOR_MODE)
+    {{ attachment.name.functionName }}* {{ attachment.name.variableName }}Attachment = get{{ attachment.name.functionName }}();
+    auto headerFlags = ui->renderHeader(this, "{{ attachment.name.functionName }}");
+    if ((headerFlags & XPEHeaderFlagsTableOpen) == XPEHeaderFlagsTableOpen) {
+        {% for field in attachment.fields -%}
+            {% if fieldIsStructSecondary(field.type, secondaryStructs) -%}
+                auto secondaryHeaderFlags = ui->beginRenderStructSecondary(this, "{{ field.type }}");
+                if ((secondaryHeaderFlags & XPEHeaderFlagsTableOpen) == XPEHeaderFlagsTableOpen) {
+                    {% for structSecondaryField in getFieldAsStructSecondary(field.type, secondaryStructs).fields -%}
+                        if (ui->renderField(this, "##{{ structSecondaryField.name }}", {{ attachment.name.variableName }}Attachment->{{ field.name }}.{{ structSecondaryField.name }}) != 0) {
+                            {{ attachment.name.variableName }}Attachment->onChanged_{{ field.name }}_{{ structSecondaryField.name }}();
+                            addAttachmentChanges(XPEInteractionHas{{ attachment.name.functionName }}Changes, true, false);
+                        }
+                    {% endfor -%}
+                }
+                ui->endRenderStructSecondary(this, "{{ field.type }}", secondaryHeaderFlags);
+            {% else -%}
+                if (ui->renderField(this, "##{{ field.name }}", {{ attachment.name.variableName }}Attachment->{{ field.name }}) != 0) {
+                    {{ attachment.name.variableName }}Attachment->onChanged_{{ field.name }}();
+                    addAttachmentChanges(XPEInteractionHas{{ attachment.name.functionName }}Changes, true, false);
+                }
+            {% endif -%}
+        {% endfor -%}
+        onRenderUI({{ attachment.name.variableName }}Attachment, ui);
+    }
+    ui->renderFooter(this, "{{ attachment.name.functionName }}", headerFlags);
+#endif
+}
+{% endfor %}
+
+void
+XPNode::to_json(nlohmann::json& j, const XPNode& self)
+{
+    XP_UNUSED(j)
+    XP_UNUSED(self)
+
+    XP_UNIMPLEMENTED("[UNIMPLEMENTED]");
+}
+
+std::optional<XPNode*>
+XPNode::from_json(const nlohmann::json& j)
+{
+    XP_UNUSED(j)
+
+    XP_UNIMPLEMENTED("[UNIMPLEMENTED]");
+    return {};
+}
+
+// clang-format on

@@ -1,0 +1,84 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// DO NOT MODIFY THIS FILE :-)
+// --------------------------------------------------------------------
+
+#pragma once
+
+// clang-format off
+
+#include <Utilities/XPPlatforms.h>
+
+#include <Utilities/XPBitFlag.h>
+#include <Utilities/XPMemoryPool.h>
+#include <SceneDescriptor/XPLayer.h>
+#include <SceneDescriptor/XPNode.h>
+#include <SceneDescriptor/XPAttachments.h>
+
+#include <stdint.h>
+#include <string>
+#include <unordered_map>
+#include <optional>
+
+class XPScene;
+
+class XPSceneStore
+{
+public:
+    XPSceneStore(XPScene* scene);
+    ~XPSceneStore();
+
+    XPLayer* createLayer(XPScene* parentScene, std::string name);
+    void destroyLayer(XPLayer* layer);
+    XPNode* createNode(XPLayer* parentLayer, std::string name);
+    XPNode* createNode(XPNode* parentNode, std::string name);
+    std::optional<XPNode*> getNode(uint32_t nodeId);
+    void destroyNode(XPNode* node);
+    void nodeAttach(XPNode* node, XPAttachmentDescriptor attachmentDescriptor);
+    void nodeDetach(XPNode* node, XPAttachmentDescriptor attachmentDescriptor);
+    {% for attachment in attachments -%}
+        {{ attachment.name.functionName }}* create{{ attachment.name.functionName }}Attachment(XPNode* owner);
+        void destroy{{ attachment.name.functionName }}Attachment({{ attachment.name.functionName }}* {{ attachment.name.variableName }}Attachment);
+        {{ attachment.name.functionName }}* nodeAttach{{ attachment.name.functionName }}(XPNode* node);
+        {{ attachment.name.functionName }}* nodeDetach{{ attachment.name.functionName }}(XPNode* node);
+        {{ attachment.name.functionName }}* getNode{{ attachment.name.functionName }}Attachment(const XPNode* node);
+    {% endfor -%}
+    uint32_t getNextLayerId() const;
+    uint32_t getNextNodeId() const;
+
+private:
+    XPScene* _scene;
+
+    uint32_t _nextLayerId;
+    uint32_t _nextNodeId;
+
+    XPMemoryPool<XPLayer>* _layerPool;
+    XPMemoryPool<XPNode>*  _nodePool;
+    {% for attachment in attachments -%}
+    XPMemoryPool<{{ attachment.name.functionName }}>* _{{ attachment.name.variableName }}Pool;
+    {% endfor -%}
+
+    std::unordered_map<uint32_t, XPNode*> _nodeTable;
+    {% for attachment in attachments -%}
+    std::unordered_map<uint32_t, {{ attachment.name.functionName }}*> _attached{{ attachment.name.functionName }}Table;
+    {% endfor -%}
+
+    {% for attachment in attachments -%}
+    std::unordered_map<uint32_t, {{ attachment.name.functionName }}*> _detached{{ attachment.name.functionName }}Table;
+    {% endfor -%}
+};
+
+// clang-format on

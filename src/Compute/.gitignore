@@ -1,0 +1,3 @@
+shaders/*.cu
+shaders/*.ptx
+thirdparty/

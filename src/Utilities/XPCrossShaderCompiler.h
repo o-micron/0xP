@@ -1,0 +1,66 @@
+/// --------------------------------------------------------------------------------------
+/// Copyright 2025 Omar Sherif Fathy
+///
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+/// --------------------------------------------------------------------------------------
+
+#pragma once
+
+#include <Utilities/XPMacros.h>
+#include <Utilities/XPPlatforms.h>
+
+#include <optional>
+#include <string>
+
+enum XPCrossShaderFormat_
+{
+    XPCrossShaderFormat_GLSL_ES_300,
+    XPCrossShaderFormat_GLSL_CORE_410,
+    XPCrossShaderFormat_GLSL_CORE_450,
+
+    XPCrossShaderFormat_MSL,
+
+    XPCrossShaderFormat_SPIRV,
+
+    XPCrossShaderFormat_Count
+};
+
+enum XPCrossShaderStage_
+{
+    XPCrossShaderStage_Vertex,
+    XPCrossShaderStage_Fragment,
+    XPCrossShaderStage_Compute,
+
+    XPCrossShaderStage_Count
+};
+
+struct XPCrossShaderInputInfo
+{
+    std::string          source;
+    XPCrossShaderFormat_ format;
+    XPCrossShaderStage_  stage;
+};
+
+struct XPCrossShaderOutputInfo
+{
+    XPCrossShaderFormat_ format;
+    std::string          source;
+    std::string          errors;
+};
+
+struct XPCrossShaderOperationInfo
+{
+    XPCrossShaderInputInfo  input;
+    XPCrossShaderOutputInfo output;
+};
+
+extern bool
+crossShaderCompile(const XPCrossShaderInputInfo& inputInfo, XPCrossShaderOutputInfo& output);
