@@ -5,20 +5,21 @@ This is mainly used to try new ideas, it offers more flexibility than performanc
 This is also a trimmed down version of the engine. Lots of commented out code or code that is trimmed etc ..
 
 # Support
-- MacOS Arm64 only
-- Windows-x64-v3+ only
-- Linux-x64-v3+ only
-- Web assembly via Emscripten (Not tested in a long time and might be affected from the timming)
+- MacOS
+- Windows
+- Linux
+- Web assembly
 
 # Play around with the engine
-First make sure you have installed `Xcode` (MacOs), `Visual Studio` (Windows), `GCC` (Linux). \
-0xP is built with a custom modified version of LLVM/CLANG, but you still need to get the tools above. \
-It's also expected that you have Python3 installed on your system .. \
-If you have any installation or build issues create an issue for that. \
-I am on MacOS and I am not 100% sure everything builds flawlessly on Windows or Linux.
+- First make sure you have installed `Xcode` (MacOs), `Visual Studio` (Windows), `GCC` (Linux). \
+- 0xP is built with a custom modified version of LLVM/CLANG, but you still need to get the tools above. \
+- It's also expected that you have Python3 installed on your system .. \
+- If you have any installation or build issues create an issue for that. \
+- I am on MacOS/Windows and I am not 100% sure everything builds flawlessly on Linux.
 
 - Clone the repository `git clone https://github.com/o-micron/0xP.git`
-- Download thirdparty (artifacts) via running `download_artifacts.sh` (MacOS | Linux), `download_artifacts.bat` (Windows)
+- Download thirdparty (artifacts) via running `download_artifacts.sh` (MacOS | Linux), `download_artifacts.bat` (Windows) \
+  For the download script to run correctly you need to have [github cli](https://cli.github.com/) installed, it basically fetches binaries from releases from [0xTP](https://github.com/o-micron/0xTP/releases/tag/v0.0.1), you can download them all manually instead if you want
 - Build everything via running `build.sh` (MacOS | Linux), `build.bat` (Windows)
 - Run the engine `run_engine.sh` (MacOS | Linux), `run_engine.bat` (Windows)
 - Run the editor `run_editor.sh` (MacOS | Linux), `run_editor.bat` (Windows)
