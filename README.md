@@ -13,7 +13,7 @@ This is also a trimmed down version of the engine. a lot of commented out code o
 - Run the tracy profiler if you want as well via running `launch_tracy.sh` (MacOS | Linux), `launch_tracy.bat` (Windows)
 
 # Architecture of the engine
-For more detailed readme about the design of the engine and how to configure/select and build pieces of the engine see [ARCHITECTURE](https://github.com/o-micron/ARCHITECTURE.md)
+For more detailed readme about the design of the engine and how to configure/select and build pieces of the engine see [ARCHITECTURE](https://github.com/o-micron/0xP/blob/main/ARCHITECTURE.md)
 
 # Screenshots
 <p float="left">
