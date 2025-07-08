@@ -8,43 +8,43 @@ cd artifacts
 : -------------------------------------------------------------------------------------------------
 : Download artifacts
 : -------------------------------------------------------------------------------------------------
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Assimp-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Assimp-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Assimp-windows-x64.zip' -DestinationPath './assimp' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Boost-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Boost-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Boost-windows-x64.zip' -DestinationPath './boost' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern FMT-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern FMT-windows-x64.zip
 powershell -command "Expand-Archive -Path 'FMT-windows-x64.zip' -DestinationPath './fmt' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern GfxReconstruct-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern GfxReconstruct-windows-x64.zip
 powershell -command "Expand-Archive -Path 'GfxReconstruct-windows-x64.zip' -DestinationPath './gfxreconstruct' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern GLM-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern GLM-windows-x64.zip
 powershell -command "Expand-Archive -Path 'GLM-windows-x64.zip' -DestinationPath './glm' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern ImGui-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern ImGui-windows-x64.zip
 powershell -command "Expand-Archive -Path 'ImGui-windows-x64.zip' -DestinationPath './imgui' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Implot-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Implot-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Implot-windows-x64.zip' -DestinationPath './implot' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Inja-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Inja-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Inja-windows-x64.zip' -DestinationPath './inja' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern JoltPhysics-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern JoltPhysics-windows-x64.zip
 powershell -command "Expand-Archive -Path 'JoltPhysics-windows-x64.zip' -DestinationPath './joltphysics' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Json-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Json-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Json-windows-x64.zip' -DestinationPath './json' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Kaguya-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Kaguya-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Kaguya-windows-x64.zip' -DestinationPath './kaguya' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern LLVM-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern LLVM-windows-x64.zip
 powershell -command "Expand-Archive -Path 'LLVM-windows-x64.zip' -DestinationPath './llvm' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Lua-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Lua-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Lua-windows-x64.zip' -DestinationPath './lua' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern MeshOptimizer-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern MeshOptimizer-windows-x64.zip
 powershell -command "Expand-Archive -Path 'MeshOptimizer-windows-x64.zip' -DestinationPath './meshoptimizer' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern SDL2-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-windows-x64.zip
 powershell -command "Expand-Archive -Path 'SDL2-windows-x64.zip' -DestinationPath './SDL' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern SpirvCross-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-windows-x64.zip
 powershell -command "Expand-Archive -Path 'SpirvCross-windows-x64.zip' -DestinationPath './SPIRV-Cross' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Stb-windows-x64.zip
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Stb-windows-x64.zip
 powershell -command "Expand-Archive -Path 'Stb-windows-x64.zip' -DestinationPath './stb' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern TinyExr-windows-x64.zip 
+gh release download v0.0.1 --repo o-micron/0xTP --pattern TinyExr-windows-x64.zip 
 powershell -command "Expand-Archive -Path 'TinyExr-windows-x64.zip' -DestinationPath './tinyexr' -Force"
-gh release download v0.0.2 --repo o-micron/0xTP --pattern Tracy-windows-x64.zip 
+gh release download v0.0.1 --repo o-micron/0xTP --pattern Tracy-windows-x64.zip 
 powershell -command "Expand-Archive -Path 'Tracy-windows-x64.zip' -DestinationPath './tracy' -Force"
 : -------------------------------------------------------------------------------------------------
 
