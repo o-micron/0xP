@@ -91,7 +91,7 @@ For more detailed readme about the design of the engine and how to configure/sel
 | <font color="yellow">**UI Subsystem**</font>                                          |||||
 | Remote UI                                                                   |✅|✅|✅|📋|
 | Realtime modification of UI themes                                          |✅|✅|✅|✅|
-| Adding more elegant design and layout (glass?)                              |📋|📋|📋|📋|
+| Adding more elegant design and layout (glass? LOL)                          |📋|📋|📋|📋|
 | <font color="yellow">**AI/MCPServer Subsystem**</font>                                |||||
 | Controlling Actor/Entities creation/destruction and configuration           |🚧|🚧|🚧|🚧|
 | <font color="yellow">**Scene Description Subsystem**</font>                           |||||
