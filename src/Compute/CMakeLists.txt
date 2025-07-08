@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 4.0)
 project(XPCompute VERSION 0.1.0 LANGUAGES C)
 
-set(ENV{PATH} "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/slang/install/bin/:$ENV{PATH}")
-set(SLANG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/slang/install/")
+if(WIN32)
+    set(ENV{PATH} "${CMAKE_SOURCE_DIR}/artifacts/windows/bin/:$ENV{PATH}")
+    set(SLANG_ROOT "${CMAKE_SOURCE_DIR}/artifacts/windows/")
+endif()
 
 if(XP_USE_COMPUTE_CUDA)
     # Find required packages

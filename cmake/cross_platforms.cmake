@@ -80,7 +80,7 @@ add_custom_target(XPInstallRiscvBinaries
 if (XP_USE_COMPUTE_CUDA)
     add_custom_target(XPXPUCompute
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/$<CONFIG>/compute
-        COMMAND ${CMAKE_SOURCE_DIR}/src/Compute/thirdparty/slang/install/bin/slangc.exe ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.slang -I${CMAKE_SOURCE_DIR}/src/Compute/shaders/ -stage compute -capability cuda_sm_5_0 -profile sm_5_0 -entry computeMain -target cuda -O3 -g0 -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.cu
+        COMMAND ${CMAKE_SOURCE_DIR}/artifacts/windows/bin/slangc.exe ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.slang -I${CMAKE_SOURCE_DIR}/src/Compute/shaders/ -stage compute -capability cuda_sm_5_0 -profile sm_5_0 -entry computeMain -target cuda -O3 -g0 -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.cu
         COMMAND nvcc -ptx ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.cu -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.ptx -diag-suppress 550
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.ptx ${CMAKE_BINARY_DIR}/$<CONFIG>/compute/
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -89,7 +89,7 @@ if (XP_USE_COMPUTE_CUDA)
 elseif(XP_USE_COMPUTE_METAL)
     add_custom_target(XPXPUCompute
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/$<CONFIG>/compute
-        COMMAND ${CMAKE_SOURCE_DIR}/src/Compute/thirdparty/slang/install/bin/slangc -I${CMAKE_SOURCE_DIR}/src/Compute/shaders/ -stage compute -entry computeMain -target metal ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.slang -O3 -g0 -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.metal
+        COMMAND ${CMAKE_SOURCE_DIR}/artifacts/macOS/bin/slangc -I${CMAKE_SOURCE_DIR}/src/Compute/shaders/ -stage compute -entry computeMain -target metal ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.slang -O3 -g0 -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.metal
         COMMAND xcrun -sdk macosx metal ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.metal -o ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.metallib
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/Compute/shaders/compute.metallib ${CMAKE_BINARY_DIR}/$<CONFIG>/compute/
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

@@ -38,6 +38,8 @@ gh release download v0.0.1 --repo o-micron/0xTP --pattern MeshOptimizer-windows-
 powershell -command "Expand-Archive -Path 'MeshOptimizer-windows-x64.zip' -DestinationPath './meshoptimizer' -Force"
 gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-windows-x64.zip
 powershell -command "Expand-Archive -Path 'SDL2-windows-x64.zip' -DestinationPath './SDL' -Force"
+gh release download v2025.12.1 --repo shader-slang/slang --pattern slang-2025.12.1-windows-x86_64.zip
+powershell -command "Expand-Archive -Path 'slang-2025.12.1-windows-x86_64.zip' -DestinationPath './slang' -Force"
 gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-windows-x64.zip
 powershell -command "Expand-Archive -Path 'SpirvCross-windows-x64.zip' -DestinationPath './SPIRV-Cross' -Force"
 gh release download v0.0.1 --repo o-micron/0xTP --pattern Stb-windows-x64.zip
@@ -74,6 +76,7 @@ xcopy /s /f /y "llvm" "windows\compiler"
 xcopy /s /f /y "lua" "windows"
 xcopy /s /f /y "meshoptimizer" "windows"
 xcopy /s /f /y "SDL" "windows"
+xcopy /s /f /y "slang" "windows"
 xcopy /s /f /y "SPIRV-Cross" "windows"
 xcopy /s /f /y "stb" "windows"
 xcopy /s /f /y "tinyexr" "windows"
@@ -94,6 +97,7 @@ rmdir /s /q "llvm"
 rmdir /s /q "lua"
 rmdir /s /q "meshoptimizer"
 rmdir /s /q "SDL"
+rmdir /s /q "slang"
 rmdir /s /q "SPIRV-Cross"
 rmdir /s /q "stb"
 rmdir /s /q "tinyexr"

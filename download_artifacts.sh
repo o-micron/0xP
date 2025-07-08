@@ -61,6 +61,9 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-linux-x64.tar.gz
     mkdir "./SDL"
     tar -xzf "SDL2-linux-x64.tar.gz" -C "./SDL"
+    gh release download v2025.12.1 --repo o-micron/0xTP --pattern slang-2025.12.1-linux-x86_64.tar.gz 
+    mkdir "./slang"
+    tar -xzf "slang-2025.12.1-linux-x86_64.tar.gz" -C "./slang"
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-linux-x64.tar.gz
     mkdir "./SPIRV-Cross"
     tar -xzf "SpirvCross-linux-x64.tar.gz" -C "./SPIRV-Cross"
@@ -122,6 +125,9 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-macos-arm64.tar.gz
     mkdir "./SDL"
     tar -xzf "SDL2-macos-arm64.tar.gz" -C "./SDL"
+    gh release download v2025.12.1 --repo o-micron/0xTP --pattern slang-2025.12.1-macos-aarch64.tar.gz 
+    mkdir "./slang"
+    tar -xzf "slang-2025.12.1-macos-aarch64.tar.gz" -C "./slang"
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-macos-arm64.tar.gz
     mkdir "./SPIRV-Cross"
     tar -xzf "SpirvCross-macos-arm64.tar.gz" -C "./SPIRV-Cross"
@@ -165,6 +171,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     cp -rf "./lua/" "./linux/"
     cp -rf "./meshoptimizer/" "./linux/"
     cp -rf "./SDL/" "./linux/"
+    cp -rf "./slang/" "./linux/"
     cp -rf "./SPIRV-Cross/" "./linux/"
     cp -rf "./stb/" "./linux/"
     cp -rf "./tinyexr/" "./linux/"
@@ -186,6 +193,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     rm -rf "lua"
     rm -rf "meshoptimizer"
     rm -rf "SDL"
+    rm -rf "slang"
     rm -rf "SPIRV-Cross"
     rm -rf "stb"
     rm -rf "tinyexr"
@@ -214,6 +222,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     cp -rf "./lua/" "./macOS/"
     cp -rf "./meshoptimizer/" "./macOS/"
     cp -rf "./SDL/" "./macOS/"
+    cp -rf "./slang/" "./macOS/"
     cp -rf "./SPIRV-Cross/" "./macOS/"
     cp -rf "./stb/" "./macOS/"
     cp -rf "./tinyexr/" "./macOS/"
@@ -235,6 +244,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     rm -rf "lua"
     rm -rf "meshoptimizer"
     rm -rf "SDL"
+    rm -rf "slang"
     rm -rf "SPIRV-Cross"
     rm -rf "stb"
     rm -rf "tinyexr"
