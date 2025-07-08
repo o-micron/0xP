@@ -25,7 +25,7 @@ I am on MacOS and I am not 100% sure everything builds flawlessly on Windows or 
 - Run the tracy profiler if you want as well via running `launch_tracy.sh` (MacOS | Linux), `launch_tracy.bat` (Windows)
 
 # Architecture of the engine
-For more detailed readme about the design of the engine and how to configure/select and build pieces of the engine see [ARCHITECTURE](https://github.com/o-micron/0xP/blob/main/ARCHITECTURE.md)
+For more detailed readme about the design of the engine and how to configure/select or extend/build pieces of the engine see [ARCHITECTURE](https://github.com/o-micron/0xP/blob/main/ARCHITECTURE.md)
 
 # Screenshots
 <p float="left">
