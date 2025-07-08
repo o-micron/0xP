@@ -1,7 +1,19 @@
 # 0xP
 0xP is based on my slightly older [Prototype Engine](https://github.com/o-micron/Prototype) \
 0xP  is my personal experimental engine. developed for experimentation only. \
-This is mainly used to try new ideas, it offers more flexibility than performance.
+This is mainly used to try new ideas, it offers more flexibility than performance. \
+This is also a trimmed down version of the engine. a lot of commented out code or code that has been trimmed out etc ..
+
+# Play around with the engine
+- Clone the repository `git clone https://github.com/o-micron/0xP.git`
+- Download thirdparty (artifacts) via running `download_artifacts.sh` (MacOS | Linux), `download_artifacts.bat` (Windows)
+- Build everything via running `build.sh` (MacOS | Linux), `build.bat` (Windows)
+- Run the engine `run_engine.sh` (MacOS | Linux), `run_engine.bat` (Windows)
+- Run the editor `run_editor.sh` (MacOS | Linux), `run_editor.bat` (Windows)
+- Run the tracy profiler if you want as well via running `launch_tracy.sh` (MacOS | Linux), `launch_tracy.bat` (Windows)
+
+# Architecture of the engine
+For more detailed readme about the design of the engine and how to configure/select and build pieces of the engine see [ARCHITECTURE](https://github.com/o-micron/ARCHITECTURE.md)
 
 # Screenshots
 <p float="left">
