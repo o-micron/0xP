@@ -61,7 +61,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-linux-x64.tar.gz
     mkdir "./SDL"
     tar -xzf "SDL2-linux-x64.tar.gz" -C "./SDL"
-    gh release download v2025.12.1 --repo o-micron/0xTP --pattern slang-2025.12.1-linux-x86_64.tar.gz 
+    gh release download v2025.12.1 --repo shader-slang/slang --pattern slang-2025.12.1-linux-x86_64.tar.gz 
     mkdir "./slang"
     tar -xzf "slang-2025.12.1-linux-x86_64.tar.gz" -C "./slang"
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-linux-x64.tar.gz
@@ -125,7 +125,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SDL2-macos-arm64.tar.gz
     mkdir "./SDL"
     tar -xzf "SDL2-macos-arm64.tar.gz" -C "./SDL"
-    gh release download v2025.12.1 --repo o-micron/0xTP --pattern slang-2025.12.1-macos-aarch64.tar.gz 
+    gh release download v2025.12.1 --repo shader-slang/slang --pattern slang-2025.12.1-macos-aarch64.tar.gz 
     mkdir "./slang"
     tar -xzf "slang-2025.12.1-macos-aarch64.tar.gz" -C "./slang"
     gh release download v0.0.1 --repo o-micron/0xTP --pattern SpirvCross-macos-arm64.tar.gz
