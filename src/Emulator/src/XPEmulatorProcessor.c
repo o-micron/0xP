@@ -126,9 +126,11 @@ xp_emulator_processor_run(XPEmulatorProcessor* processor)
     printf("stackTopAddress is %08" PRIx32 "\n", processor->bus.hostMappedMemory.deviceTopStack);
     printf("heapStartAddress is %08" PRIx32 "\n", processor->bus.hostMappedMemory.deviceStartHeap);
     printf("heapEndAddress is %08" PRIx32 "\n", processor->bus.hostMappedMemory.deviceEndHeap);
+    printf("FramebufferAddress is %08" PRIx32 "\n", processor->bus.hostMappedMemory.deviceFramebuffer);
+    printf("FrameMemoryPoolAddress is %08" PRIx32 "\n", processor->bus.hostMappedMemory.deviceFrameMemoryPool);
     printf("program.pc = %u\n", processor->pc);
     {
-        uint32_t fbAddr = processor->bus.hostMappedMemory.deviceStartHeap;
+        uint32_t fbAddr = processor->bus.hostMappedMemory.deviceFramebuffer;
         if (fbAddr != 0) {
 #define WIDTH  120
 #define HEIGHT 120

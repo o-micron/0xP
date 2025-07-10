@@ -192,15 +192,24 @@ main()
 
     // uint8_t dummy = 1;
 
+    volatile uint8_t* framebuffer           = (uint8_t*)malloc(sizeof(float) * 120 * 120 * 4);
+    volatile float*   colorAttachmentBuffer = (float*)framebuffer;
+    volatile float*   depthAttachmentBuffer = colorAttachmentBuffer + 120 * 120 * 3;
+
+    volatile uint32_t frameMemoryPoolNumBytes = sizeof(uint8_t) * 250 * 1024;
+    volatile uint8_t* frameMemoryPool         = (uint8_t*)malloc(frameMemoryPoolNumBytes);
+
+    // NOTE:
+    // Framebuffer is expected to be the first thing allocated, then the frame memory pool buffer
+    // It's not guaranteed that framebuffer pointer is matching start heap pointer
+    // There might be metadata preceeding the framebuffer pointer related to info on the allocated buffer size ..
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_BOTTOM_STACK_PTR)) = (uint32_t)((void*)&_bottom_stack);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_TOP_STACK_PTR))    = (uint32_t)((void*)&_top_stack);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_START_HEAP_PTR))   = (uint32_t)((void*)&_start_heap) + 8;
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_END_HEAP_PTR))     = (uint32_t)((void*)&_end_heap);
+    *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_FRAMEBUFFER_PTR))  = (uint32_t)((void*)framebuffer);
+    *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_FRAMEMEMPOOL_PTR)) = (uint32_t)((void*)frameMemoryPool);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_BASE))             = 0x1;
-
-    volatile uint8_t* framebuffer           = (uint8_t*)malloc(sizeof(float) * 120 * 120 * 4);
-    volatile float*   colorAttachmentBuffer = (float*)framebuffer;
-    volatile float*   depthAttachmentBuffer = colorAttachmentBuffer + 120 * 120 * 3;
 
     int square_size = 5; // Size of each checkerboard square
 
@@ -226,9 +235,6 @@ main()
             }
         }
     }
-
-    volatile uint32_t frameMemoryPoolNumBytes = sizeof(uint8_t) * 250 * 1024;
-    volatile uint8_t* frameMemoryPool         = (uint8_t*)malloc(frameMemoryPoolNumBytes);
 
     FramebufferRef  fbr((float*)colorAttachmentBuffer, (float*)depthAttachmentBuffer, 120, 120);
     FrameMemoryPool fmp((uint8_t*)frameMemoryPool, frameMemoryPoolNumBytes);

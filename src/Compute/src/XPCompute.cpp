@@ -168,9 +168,11 @@ load_and_run_cuda(const char* riscvCoreProgram)
         printf("stackTopAddress is %08" PRIx32 "\n", h_processors[i].bus.hostMappedMemory.deviceTopStack);
         printf("heapStartAddress is %08" PRIx32 "\n", h_processors[i].bus.hostMappedMemory.deviceStartHeap);
         printf("heapEndAddress is %08" PRIx32 "\n", h_processors[i].bus.hostMappedMemory.deviceEndHeap);
+        printf("FramebufferAddress is %08" PRIx32 "\n", h_processors[i].bus.hostMappedMemory.deviceFramebuffer);
+        printf("FrameMemoryPoolAddress is %08" PRIx32 "\n", h_processors[i].bus.hostMappedMemory.deviceFrameMemoryPool);
         printf("program.pc = %u\n", h_processors[i].pc);
 
-        uint32_t fbAddr = h_processors[i].bus.hostMappedMemory.deviceStartHeap;
+        uint32_t fbAddr = h_processors[i].bus.hostMappedMemory.deviceFramebuffer;
         if (fbAddr != 0) {
     #define WIDTH  120
     #define HEIGHT 120

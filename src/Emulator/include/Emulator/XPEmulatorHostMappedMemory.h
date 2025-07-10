@@ -26,6 +26,8 @@ typedef struct XPEmulatorHostMappedMemory
     uint32_t deviceTopStack;
     uint32_t deviceStartHeap;
     uint32_t deviceEndHeap;
+    uint32_t deviceFramebuffer;
+    uint32_t deviceFrameMemoryPool;
 } XPEmulatorHostMappedMemory;
 
 XP_EMULATOR_EXTERN void

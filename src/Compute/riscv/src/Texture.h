@@ -121,9 +121,9 @@ sampleTextureLinear(const Texture2D& texture, float u, float v, bool repeat, boo
 #undef LERP
 
     if (applyGammeCorrect) {
-        result.x = std::pow(result.x, 2.2f);
-        result.y = std::pow(result.y, 2.2f);
-        result.z = std::pow(result.z, 2.2f);
+        result.x = std::pow(result.x, 1.0f / 2.2f);
+        result.y = std::pow(result.y, 1.0f / 2.2f);
+        result.z = std::pow(result.z, 1.0f / 2.2f);
     }
 
     return result;

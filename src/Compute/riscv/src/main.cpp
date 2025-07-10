@@ -117,15 +117,31 @@ renderTest(FramebufferRef& fbr, FrameMemoryPool& fmp)
 int
 main()
 {
+    // BIG NOTE:
+    // ---------
+    // Ideally, this program here is supposed to be ran on each thread to do rasterization for a single tile of the whole framebuffer (1920 x 1080).
+    // Since I decided to go for 120 x 120 per tile then we should be having 144 of them running in parallel.
+    // Here for just testing out, we draw a full triangle for each tile, in more ideal situation we would check if the tile actuallly ends up having
+    // triangles there or not and in that case we start the work ... I'm just putting the comment to state that yes I know ...
+    // More work needs to put in every single part of this actually.
+    uint8_t* framebuffer           = (uint8_t*)malloc(sizeof(float) * 120 * 120 * 4);
+    float*   colorAttachmentBuffer = (float*)framebuffer;
+    float*   depthAttachmentBuffer = colorAttachmentBuffer + 120 * 120 * 3;
+
+    uint32_t frameMemoryPoolNumBytes = sizeof(uint8_t) * 250 * 1024;
+    uint8_t* frameMemoryPool         = (uint8_t*)malloc(frameMemoryPoolNumBytes);
+
+    // NOTE:
+    // Framebuffer is expected to be the first thing allocated, then the frame memory pool buffer
+    // It's not guaranteed that framebuffer pointer is matching start heap pointer
+    // There might be metadata preceeding the framebuffer pointer related to info on the allocated buffer size ..
     *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_BOTTOM_STACK_PTR)) = (uint32_t)((void*)&_bottom_stack);
     *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_TOP_STACK_PTR))    = (uint32_t)((void*)&_top_stack);
     *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_START_HEAP_PTR))   = (uint32_t)((void*)&_start_heap) + 8;
     *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_END_HEAP_PTR))     = (uint32_t)((void*)&_end_heap);
+    *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_FRAMEBUFFER_PTR))  = (uint32_t)((void*)framebuffer);
+    *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_FRAMEMEMPOOL_PTR)) = (uint32_t)((void*)frameMemoryPool);
     *((volatile uint32_t*)(XP_XPU_CONFIG_HMM_BASE))             = 0x1;
-
-    uint8_t* framebuffer           = (uint8_t*)malloc(sizeof(float) * 120 * 120 * 4);
-    float*   colorAttachmentBuffer = (float*)framebuffer;
-    float*   depthAttachmentBuffer = colorAttachmentBuffer + 120 * 120 * 3;
 
     int square_size = 5;
 
@@ -147,9 +163,6 @@ main()
             }
         }
     }
-
-    uint32_t frameMemoryPoolNumBytes = sizeof(uint8_t) * 250 * 1024;
-    uint8_t* frameMemoryPool         = (uint8_t*)malloc(frameMemoryPoolNumBytes);
 
     FramebufferRef  fbr(colorAttachmentBuffer, depthAttachmentBuffer, 120, 120);
     FrameMemoryPool fmp(frameMemoryPool, frameMemoryPoolNumBytes);
