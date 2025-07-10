@@ -116,7 +116,7 @@ The main goal there is to run `RV32im` elf binaries on both the `CPU` or the `GP
 
 First thing is first, you need to have a C/C++ compiler that compiles for the riscv target (RV32IM).
 So you need to go to `src/Emulator/`, then run `./setup.sh`
-(if you're on Windows, use WSL). \
+(if you're on Windows, use WSL, also make sure the setup.sh is set as `LF instead of CRLF` !!). \
 This should clone the riscv-gcc repository then builds the compiler for us. \
 Then run `./build.sh` to build the example programs that you can find under `src/Emulator/test/`. \
 The `rasterizer32` is actually one of those test programs that will be built there. \
