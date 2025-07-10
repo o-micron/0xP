@@ -106,3 +106,40 @@ id1["File::Create"] ---> id5["File::onReloaded"] --> id3 --> id4
 <br>
 <br>
 
+# RISC-V Emulation
+There are multiple locations where you can see riscv emulation related code. \
+Originally, I was planning to run RiscV emulator on CPU only, then I decided to add the ability to run same Code on GPU. \
+To see the RISC-V emulation code that runs on the CPU see `src/Emulator/`.\
+To see the RISC-V emulation code that runs on the GPU see `src/Compute/`.
+
+The main goal there is to run `RV32im` elf binaries on both the `CPU` or the `GPU`.
+
+First thing is first, you need to have a C/C++ compiler that compiles for the riscv target (RV32IM).
+So you need to go to `src/Emulator/`, then run `./setup.sh`
+(if you're on Windows, use WSL). \
+This should clone the riscv-gcc repository then builds the compiler for us. \
+Then run `./build.sh` to build the example programs that you can find under `src/Emulator/test/`. \
+The `rasterizer32` is actually one of those test programs that will be built there. \
+After building the test programs, you should see these files:
+- `src/Emulator/test/build/Debug/rasterizer32`
+- `src/Emulator/test/build/Debug/rasterizer32.bin`
+- `src/Emulator/test/build/Debug/rasterizer32.lst`
+
+You can open `rasterizer32.lst` to read the assembly code there if you want (for debugging later).
+
+Now let's talk about the emulator side.
+
+# Emulator on CPU
+- Written in C, source code found under `src/Emulator/src/` and `/src/Emulator/include/`
+- It is used from the editor to execute the test programs we previously compiled above. 
+
+# Emulator on GPU
+- Written in Slang, it is ran as a compute shader. \
+- As you might tell, running on the emulator on the GPU comes with some assumptions as we don't have access to filesystem for example there ... So you will see slight difference in the emulator code for both cases.
+
+# Editor
+Before you go down to running riscv programs from the editor, make sure you have compiled the test riscv programs. The editor expects you to place all compiled riscv binaries under `/build/<debug|Release>/riscv/`. So when you type `rasterizer32` in the textfield, it actually loads `/build/<Debug|Release>/riscv/rasterizer32`
+
+In order to run rasterizer on RISC-V emulator, simply open the `Emulator` tab in the editor, then select any object in the scene from the `Hierarchy tab on the left`, after you click one object, on the right you will see a tab called `Traits`, right click there and click `Script` to add a new `Script` component or trait to that object. \
+The script is mainly the 32-bit riscv program that you're to then load and running it. \
+Now under script, you'll see a text field for `program`, simply type the name of the 32-bit riscv program you would like to run then click on the small download button to load the elf binary and then press the play button to run the code. 
