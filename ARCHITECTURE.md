@@ -134,8 +134,13 @@ Now let's talk about the emulator side.
 - It is used from the editor to execute the test programs we previously compiled above. 
 
 # Emulator on GPU
-- Written in Slang, it is ran as a compute shader. \
+- Written in Slang, it is ran as a compute shader. It runs same RISC-V programs compiled and ran via the emulator running on the CPU.
 - As you might tell, running on the emulator on the GPU comes with some assumptions as we don't have access to filesystem for example there ... So you will see slight difference in the emulator code for both cases.
+- For rasterizer32, it is assumed that we divide the framebuffer into tiles, each tile is handled by a riscv core. For example 1920x1080 final render target, say we have 120x120 tile, so we end up having 144 tiles, 144 threads (RiscV cores) emulated and ran in as a compute shader.
+- There's no optimizations whatsoever there as you might tell :))
+- The emulator is written very simple and direct. Fetch, decode, execute .. :))
+- No fancy branch predictions or anything that might accelerate the process.
+- Also the GPU is not simply a CPU with more threads ... Long story short, performance is not great there of course, I know, there are huge room for optimizations, later ..
 
 # Editor
 Before you go down to running riscv programs from the editor, make sure you have compiled the test riscv programs. The editor expects you to place all compiled riscv binaries under `/build/<debug|Release>/riscv/`. So when you type `rasterizer32` in the textfield, it actually loads `/build/<Debug|Release>/riscv/rasterizer32`
