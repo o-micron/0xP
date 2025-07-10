@@ -49,6 +49,9 @@ xp_xpu_host_mapped_memory_store(XPXPUHostMappedMemory* memory, uint32_t address,
             memory->deviceTopStack    = xp_xpu_host_mapped_memory_load(memory, XP_XPU_CONFIG_HMM_TOP_STACK_PTR, 32);
             memory->deviceStartHeap   = xp_xpu_host_mapped_memory_load(memory, XP_XPU_CONFIG_HMM_START_HEAP_PTR, 32);
             memory->deviceEndHeap     = xp_xpu_host_mapped_memory_load(memory, XP_XPU_CONFIG_HMM_END_HEAP_PTR, 32);
+            memory->deviceFramebuffer = xp_xpu_host_mapped_memory_load(memory, XP_XPU_CONFIG_HMM_FRAMEBUFFER_PTR, 32);
+            memory->deviceFrameMemoryPool =
+              xp_xpu_host_mapped_memory_load(memory, XP_XPU_CONFIG_HMM_FRAMEMEMPOOL_PTR, 32);
         }
     }
 }

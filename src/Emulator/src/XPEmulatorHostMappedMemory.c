@@ -85,6 +85,10 @@ xp_emulator_host_mapped_memory_store(XPEmulatorHostMappedMemory* memory,
               xp_emulator_host_mapped_memory_load(memory, XP_EMULATOR_CONFIG_HMM_START_HEAP_PTR, 32);
             memory->deviceEndHeap =
               xp_emulator_host_mapped_memory_load(memory, XP_EMULATOR_CONFIG_HMM_END_HEAP_PTR, 32);
+            memory->deviceFramebuffer =
+              xp_emulator_host_mapped_memory_load(memory, XP_EMULATOR_CONFIG_HMM_FRAMEBUFFER_PTR, 32);
+            memory->deviceFrameMemoryPool =
+              xp_emulator_host_mapped_memory_load(memory, XP_EMULATOR_CONFIG_HMM_FRAMEMEMPOOL_PTR, 32);
         }
     }
 }
