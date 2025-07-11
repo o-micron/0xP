@@ -162,6 +162,7 @@ Now let's talk about the emulator side.
 - It is used from the editor to execute the test programs we previously compiled above. 
 
 # Emulator on GPU
+- To allow running riscv 32-bit programs (rasterizer) on GPU, you need to enable that in the `CMakePresets.json` under `"XP_USE_COMPUTE": "ON"` and also `"XP_USE_COMPUTE_CUDA": "ON"` if you're having NVIDIA GPU. 
 - Written in Slang, it is ran as a compute shader. It runs same RISC-V programs compiled and ran via the emulator running on the CPU.
 - As you might tell, running on the emulator on the GPU comes with some assumptions as we don't have access to filesystem for example there ... So you will see slight difference in the emulator code for both cases.
 - For rasterizer32, it is assumed that we divide the framebuffer into tiles, each tile is handled by a riscv core. For example 1920x1080 final render target, say we have 120x120 tile, so we end up having 144 tiles, 144 threads (RiscV cores) emulated and ran in as a compute shader.
