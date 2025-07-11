@@ -5,7 +5,7 @@
 So even if you're using `Xcode` or `Visual Studio`, you have to first let cmake use `Ninja` generator first to also emmit the `compile_commands.json`. I would recommend simply using `Ninja` for all platforms.
 I know some time you need to use `Visual Studio` or `Xcode` to debug and do what you're used to do, so that's also available. Pick whatever works for you. For simplicity, just always run `build.sh` or `build.bat`. Then you can launch Xcode or Visual Studio from `build/XPENGINE.vs` or `build/XPENGINE.xcodeproj`.
 
-The 0xP engine is build in multiple subsystems. \
+The 0xP engine is built as multiple subsystems. \
 Rendering is a subsystem. Physics is a subsystem. etc .. \
 Each subsystem is expected to have multiple available implementations for you to choose from. \
 You can edit that in `CMakePresets.json`

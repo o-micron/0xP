@@ -205,7 +205,7 @@ main()
     // There might be metadata preceeding the framebuffer pointer related to info on the allocated buffer size ..
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_BOTTOM_STACK_PTR)) = (uint32_t)((void*)&_bottom_stack);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_TOP_STACK_PTR))    = (uint32_t)((void*)&_top_stack);
-    *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_START_HEAP_PTR))   = (uint32_t)((void*)&_start_heap) + 8;
+    *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_START_HEAP_PTR))   = (uint32_t)((void*)&_start_heap);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_END_HEAP_PTR))     = (uint32_t)((void*)&_end_heap);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_FRAMEBUFFER_PTR))  = (uint32_t)((void*)framebuffer);
     *((volatile uint32_t*)(XP_EMULATOR_CONFIG_HMM_FRAMEMEMPOOL_PTR)) = (uint32_t)((void*)frameMemoryPool);
