@@ -99,12 +99,39 @@ flowchart LR
 id1["File::Create"] ---> id2["File::onCreated"] ---> id3["createResourceTypeBuffer"] ---> id4["loadResourceTypeFromDisk"]
 id1["File::Create"] ---> id5["File::onReloaded"] --> id3 --> id4
 ```
+---
+<br>
+<br>
+<br>
+<br>
+<br>
 
+# Scene Description
+The 0xP engine is describing a scene using what I call scene description. \
+Simply for us to render a scene we need some description of the actors or objects or entities in the scene. \
+
+For example, we need to describe the location and rotation of an object, where the object is and how it is transformed is very important for us to describe so that we later render it. Maybe we need to also describe the object more and say that it should be moving by following physics rules, so we add or attach a 'rigidbody` trait or component to the object. \
+This is very similar to ECS (Entity Component System) .. Many game engines are doing the same thing .. the concept should be familiar to you if you use Unity or Unreal Engine .. 
+
+0xP is structured as follows:
+- Scene
+  - Layer(s)
+    - Node(s)
+      - Attachment(s)
+
+As you can see, it is very simply structure. Usually you have a scene with the main default layer which has all nodes. \
+Each node can `attach` or `detach` some traits or components dynamically.
+
+Now it is very important to know that much of the code that does enable that `Node Attachment System` is built inside custom extensions to the LLVM/CLANG compiler that I custom made for the 0xP engine. That's why it is required to build the engine with that custom build of LLVM/Clang, otherwise we will lose some of the debugging and code generation features.
+
+I know sometimes one simply needs to use MSVC or maybe GCC, you can still do that but expect some of the tools builtin and integrated to not work well with you in this case. So just keep that in mind. \
+Also remember that you can use `Xcode` and `Visual studio`, the IDEs, without the compiler that comes with it and instead use the 0xP custom build of LLVM/Clang .. 
+---
 <br>
 <br>
 <br>
 <br>
-<br>
+
 
 # RISC-V Emulation
 There are multiple locations where you can see riscv emulation related code. \
